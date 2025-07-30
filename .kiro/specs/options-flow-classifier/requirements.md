@@ -54,7 +54,7 @@ This feature enhances the existing options flow classification system to provide
 #### Acceptance Criteria
 
 1. WHEN a trade is classified THEN the system SHALL store the expected hypothesis
-2. WHEN trade outcomes are recorded THEN the system SHALL accept values: "Forever Discounted", "Discount then pump", "Forever Pumped", "Pump then discount"
+2. WHEN trade outcomes are recorded THEN the system SHALL accept values:'FOREVER DISCOUNTED', 'DISCOUNT THEN PUMP',           'FOREVER PUMPED', 'PUMP THEN DISCOUNT'
 3. WHEN comparing outcomes THEN the system SHALL calculate accuracy metrics for each classification type
 4. WHEN displaying results THEN the system SHALL show expected vs actual outcome comparison
 5. WHEN generating reports THEN the system SHALL provide classification accuracy statistics

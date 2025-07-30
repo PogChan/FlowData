@@ -7,7 +7,15 @@ CREATE TABLE classification_rules (
     name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     classification_logic JSONB NOT NULL,
-    expected_hypothesis TEXT NOT NULL,
+    expected_outcome VARCHAR(50) NOT NULL CHECK (
+        expected_outcome IN (
+            'FOREVER DISCOUNTED',
+            'DISCOUNT THEN PUMP',
+            'FOREVER PUMPED',
+            'PUMP THEN DISCOUNT',
+            'MANUAL REVIEW'
+        )
+    ),
     result_keywords TEXT[] NOT NULL,
     is_active BOOLEAN DEFAULT true,
     success_rate DECIMAL(5,4),
@@ -33,58 +41,58 @@ COMMENT ON COLUMN classification_rules.result_keywords IS 'Array of keywords ass
 COMMENT ON COLUMN classification_rules.success_rate IS 'Historical success rate of this rule (0.0 to 1.0)';
 
 -- Insert default classification rules
-INSERT INTO classification_rules (name, description, classification_logic, expected_hypothesis, result_keywords) VALUES
+INSERT INTO classification_rules (name, description, classification_logic, expected_outcome, result_keywords) VALUES
 ('ATM SAME STRIKE', 'Both legs have identical at-the-money strikes',
  '{"type": "same_strike", "moneyness": "ATM", "delta_threshold": 0.18}',
- 'CREATED WALL ON BUY SIDE TRADE',
- ARRAY['wall', 'buy side']),
+ 'FOREVER DISCOUNTED',
+ ARRAY['forever', 'discount']),
 
 ('ITM SAME STRIKE', 'Both legs have identical in-the-money strikes',
  '{"type": "same_strike", "moneyness": "ITM", "delta_threshold": 0.18}',
- 'GO TO BUY STRIKE, PUMP BUY SIDE',
- ARRAY['pump', 'buy strike']),
+ 'DISCOUNT THEN PUMP',
+ ARRAY['discount', 'then pump', 'pump']),
 
 ('OTM SAME STRIKE', 'Both legs have identical out-of-the-money strikes',
  '{"type": "same_strike", "moneyness": "OTM", "delta_threshold": 0.18}',
- 'GO TO BUY STRIKE',
- ARRAY['buy strike']),
+ 'FOREVER PUMPED',
+ ARRAY['forever', 'pump']),
 
 ('WITHIN RANGE OTMS', 'Both legs within 0.18 delta range of buy side direction',
  '{"type": "delta_range", "range": "within", "moneyness": "OTM", "delta_threshold": 0.18}',
- 'DISCOUNT SELL SIDE, RUN BUY SIDE',
- ARRAY['discount', 'sell side', 'run buy side']),
+ 'DISCOUNT THEN PUMP',
+ ARRAY['discount', 'then pump', 'pump']),
 
 ('OUTSIDE RANGE OTMS', 'Either leg outside 0.18 delta range',
  '{"type": "delta_range", "range": "outside", "moneyness": "OTM", "delta_threshold": 0.18}',
- 'GO TO BUY SIDE IMMEDIATELY',
- ARRAY['buy side immediately']),
+ 'FOREVER PUMPED',
+ ARRAY['forever', 'pump']),
 
 ('BLANK SIDE', 'Missing or null side values requiring manual review',
  '{"type": "validation", "check": "blank_side"}',
- 'FOLLOW BUY SIDE',
- ARRAY['follow buy side']),
+ 'FOREVER PUMPED',
+ ARRAY['forever', 'pump']),
 
 ('WITHIN RANGE ITMS', 'ITM strikes on both sides within 0.18 delta range',
  '{"type": "delta_range", "range": "within", "moneyness": "ITM", "delta_threshold": 0.18}',
- 'TAG BUY STRIKE',
- ARRAY['tag buy strike']),
+ 'FOREVER DISCOUNTED',
+ ARRAY['forever', 'discount']),
 
 ('STRADDLE', 'Simultaneous buy call and buy put positions',
  '{"type": "position_structure", "structure": "straddle"}',
- 'RUN CHEAPER SIDE FIRST, THEN OTHER',
- ARRAY['cheaper side', 'then other']),
+ 'DISCOUNT THEN PUMP',
+ ARRAY['discount', 'then pump', 'pump']),
 
 ('NEGATIVE ITM', 'Sell side aggregate value exceeds buy side value',
  '{"type": "value_comparison", "comparison": "sell_exceeds_buy"}',
- 'DROP TO ITM STRIKE',
- ARRAY['drop', 'itm strike']),
+ 'FOREVER PUMPED',
+ ARRAY['forever', 'pump']),
 
 ('DEBIT AND SELL', 'Debit spread combined with opposite sell leg',
  '{"type": "position_structure", "structure": "debit_and_sell"}',
- 'DEBIT WORKED OUT',
- ARRAY['debit worked']),
+ 'FOREVER PUMPED',
+ ARRAY['forever', 'pump']),
 
 ('UNCLASSIFIED', 'Fallback for trades not matching any pattern',
  '{"type": "fallback"}',
- 'MANUAL REVIEW REQUIRED',
+ 'MANUAL REVIEW',
  ARRAY['manual review', 'unclassified']);

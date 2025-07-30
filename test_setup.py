@@ -30,7 +30,7 @@ def test_data_models():
         dte=30,
         er_flag=False,
         classification="ATM SAME STRIKE",
-        expected_hypothesis="CREATED WALL ON BUY SIDE TRADE",
+        expeted_outcome="CREATED WALL ON BUY SIDE TRADE",
         trade_value=55000.0,
         confidence_score=0.85
     )
@@ -62,7 +62,7 @@ def test_data_models():
         name="ATM SAME STRIKE",
         description="Both legs have the same ATM strike",
         classification_logic={"strike_relationship": "same", "moneyness": "ATM"},
-        expected_hypothesis="CREATED WALL ON BUY SIDE TRADE",
+        expeted_outcome="CREATED WALL ON BUY SIDE TRADE",
         result_keywords=["wall", "buy side"],
         is_active=True,
         created_date=datetime.now(),

@@ -81,7 +81,7 @@ class OptionsFlow:
     dte: int
     er_flag: bool
     classification: str
-    expected_hypothesis: str
+    expected_outcome: str
     actual_outcome: Optional[str]  # Values: "Forever Discounted", "Discount then pump", "Forever Pumped", "Pump then discount"
     trade_value: float
     confidence_score: float
@@ -114,7 +114,7 @@ class ClassificationRule:
     name: str
     description: str
     classification_logic: Dict[str, Any]
-    expected_hypothesis: str
+    expected_outcome: str
     result_keywords: List[str]
     is_active: bool
     created_date: datetime
@@ -209,7 +209,7 @@ class TradeClassifier:
     def classify_earnings_trade(self, trade: OptionsFlow) -> bool:
         """Classify trade as earnings-related based on ER flag and additional validation"""
 
-    def get_expected_hypothesis(self, classification: str, is_earnings: bool) -> str:
+    def get_expected_outcome(self, classification: str, is_earnings: bool) -> str:
         """Get expected hypothesis based on classification and earnings status"""
 ```
 
@@ -376,7 +376,7 @@ CREATE TABLE options_flow (
     dte INTEGER,
     er_flag BOOLEAN,
     classification VARCHAR(50),
-    expected_hypothesis TEXT,
+    expected_outcome TEXT,
     actual_outcome VARCHAR(50),
     trade_value DECIMAL(15,2),
     confidence_score DECIMAL(4,3),
@@ -392,7 +392,7 @@ CREATE TABLE classification_rules (
     name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     classification_logic JSONB NOT NULL,
-    expected_hypothesis TEXT NOT NULL,
+    expected_outcome TEXT NOT NULL,
     result_keywords TEXT[] NOT NULL,
     is_active BOOLEAN DEFAULT true,
     success_rate DECIMAL(5,4),

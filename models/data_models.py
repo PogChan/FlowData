@@ -32,7 +32,7 @@ class OptionsFlow:
     er_flag: bool
     # Enhanced classification and outcome fields
     classification: Optional[str] = None
-    expected_hypothesis: Optional[str] = None
+    expected_outcome: Optional[str] = None
     actual_outcome: Optional[str] = None  # Values: "Forever Discounted", "Discount then pump", "Forever Pumped", "Pump then discount"
     trade_value: float = 0.0
     confidence_score: float = 0.0
@@ -74,7 +74,7 @@ class ClassificationRule:
     name: str
     description: Optional[str]
     classification_logic: Dict[str, Any]
-    expected_hypothesis: str
+    expected_outcome: str
     result_keywords: List[str]
     is_active: bool = True
     success_rate: Optional[float] = None

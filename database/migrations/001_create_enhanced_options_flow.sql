@@ -27,13 +27,22 @@ CREATE TABLE options_flow (
     er_flag BOOLEAN,
     -- New classification and outcome fields
     classification VARCHAR(50),
-    expected_hypothesis TEXT,
+    expected_outcome VARCHAR(50) NOT NULL CHECK (
+        expected_outcome IN (
+            'FOREVER DISCOUNTED',
+            'DISCOUNT THEN PUMP',
+            'FOREVER PUMPED',
+            'PUMP THEN DISCOUNT',
+            'MANUAL REVIEW'
+        )
+    ),
     actual_outcome VARCHAR(50),
     trade_value DECIMAL(15,2),
     confidence_score DECIMAL(4,3),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
 
 -- Create indexes for performance
 CREATE INDEX idx_options_flow_symbol ON options_flow(symbol);
@@ -59,7 +68,7 @@ CREATE TRIGGER update_options_flow_updated_at
 -- Add comments for documentation
 COMMENT ON TABLE options_flow IS 'Enhanced options flow data with classification and outcome tracking';
 COMMENT ON COLUMN options_flow.classification IS 'Trade classification result (ATM SAME STRIKE, ITM SAME STRIKE, etc.)';
-COMMENT ON COLUMN options_flow.expected_hypothesis IS 'Expected outcome hypothesis based on classification';
+COMMENT ON COLUMN options_flow.expected_outcome IS 'Expected outcome hypothesis based on classification';
 COMMENT ON COLUMN options_flow.actual_outcome IS 'Actual trade outcome: Forever Discounted, Discount then pump, Forever Pumped, Pump then discount';
 COMMENT ON COLUMN options_flow.trade_value IS 'Total value of the trade in dollars';
 COMMENT ON COLUMN options_flow.confidence_score IS 'Classification confidence score (0.0 to 1.0)';

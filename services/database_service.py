@@ -45,7 +45,7 @@ class SupabaseService(DatabaseServiceInterface):
                 'dte': flow.dte,
                 'er_flag': flow.er_flag,
                 'classification': flow.classification,
-                'expected_hypothesis': flow.expected_hypothesis,
+                'expected_outcome': flow.expected_outcome,
                 'actual_outcome': flow.actual_outcome,
                 'trade_value': flow.trade_value,
                 'confidence_score': flow.confidence_score
@@ -104,7 +104,7 @@ class SupabaseService(DatabaseServiceInterface):
                     dte=int(row['dte']) if row['dte'] else 0,
                     er_flag=bool(row['er_flag']) if row['er_flag'] is not None else False,
                     classification=row['classification'],
-                    expected_hypothesis=row['expected_hypothesis'],
+                    expected_outcome=row['expected_outcome'],
                     actual_outcome=row['actual_outcome'],
                     trade_value=float(row['trade_value']) if row['trade_value'] else 0.0,
                     confidence_score=float(row['confidence_score']) if row['confidence_score'] else 0.0,
@@ -128,7 +128,7 @@ class SupabaseService(DatabaseServiceInterface):
                 'name': rule.name,
                 'description': rule.description,
                 'classification_logic': rule.classification_logic,
-                'expected_hypothesis': rule.expected_hypothesis,
+                'expected_outcome': rule.expected_outcome,
                 'result_keywords': rule.result_keywords,
                 'is_active': rule.is_active,
                 'success_rate': rule.success_rate
@@ -159,7 +159,7 @@ class SupabaseService(DatabaseServiceInterface):
                     name=row['name'],
                     description=row['description'],
                     classification_logic=row['classification_logic'],
-                    expected_hypothesis=row['expected_hypothesis'],
+                    expected_outcome=row['expected_outcome'],
                     result_keywords=row['result_keywords'],
                     is_active=bool(row['is_active']),
                     success_rate=float(row['success_rate']) if row['success_rate'] else None,
@@ -283,7 +283,7 @@ class SupabaseService(DatabaseServiceInterface):
         try:
             # Get all flows with this classification that have outcomes
             result = self.supabase.table('options_flow').select(
-                'expected_hypothesis, actual_outcome'
+                'expected_outcome, actual_outcome'
             ).eq(
                 'classification', classification
             ).not_.is_(
@@ -298,7 +298,7 @@ class SupabaseService(DatabaseServiceInterface):
 
             # Simple accuracy calculation - can be enhanced based on business logic
             for row in result.data:
-                expected = row['expected_hypothesis']
+                expected = row['expected_outcome']
                 actual = row['actual_outcome']
 
                 # Basic matching logic - this can be made more sophisticated

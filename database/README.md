@@ -20,7 +20,7 @@ Extended from the original table with new fields for classification and outcome 
 
 **New Fields Added**:
 - `classification` - Trade classification result (ATM SAME STRIKE, ITM SAME STRIKE, etc.)
-- `expected_hypothesis` - Expected outcome hypothesis based on classification
+- `expected_outcome` - Expected outcome hypothesis based on classification
 - `actual_outcome` - Actual trade outcome (Forever Discounted, Discount then pump, etc.)
 - `trade_value` - Total value of the trade in dollars
 - `confidence_score` - Classification confidence score (0.0 to 1.0)
@@ -37,7 +37,7 @@ Stores dynamic classification rules for trade analysis:
 - `rule_id` - Unique identifier for each rule
 - `name` - Rule name (ATM SAME STRIKE, WITHIN RANGE OTMS, etc.)
 - `classification_logic` - JSON configuration defining rule evaluation logic
-- `expected_hypothesis` - Expected outcome for trades matching this rule
+- `expected_outcome` - Expected outcome for trades matching this rule
 - `result_keywords` - Array of keywords for search and analysis
 - `success_rate` - Historical success rate of the rule
 
