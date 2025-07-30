@@ -1,0 +1,7 @@
+yfinance
+pandas
+numpy
+streamlit
+supabase
+polygon-api-client
+python-dotenv
