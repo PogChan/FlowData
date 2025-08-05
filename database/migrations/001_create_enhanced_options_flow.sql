@@ -25,9 +25,12 @@ CREATE TABLE options_flow (
     implied_volatility DECIMAL(6,4),
     dte INTEGER,
     er_flag BOOLEAN,
-    -- New classification and outcome fields
+    -- Multi-leg trade identification
+    trade_signature VARCHAR(500),
+    trade_group_id UUID,
+    -- Classification and analysis
     classification VARCHAR(50),
-    expected_outcome VARCHAR(50) NOT NULL CHECK (
+    expected_outcome VARCHAR(50) CHECK (
         expected_outcome IN (
             'FOREVER DISCOUNTED',
             'DISCOUNT THEN PUMP',
@@ -36,9 +39,40 @@ CREATE TABLE options_flow (
             'MANUAL REVIEW'
         )
     ),
-    actual_outcome VARCHAR(50),
+    actual_outcome VARCHAR(50) CHECK (
+        actual_outcome IN (
+            'FOREVER DISCOUNTED',
+            'DISCOUNT THEN PUMP',
+            'FOREVER PUMPED',
+            'PUMP THEN DISCOUNT',
+            'MANUAL REVIEW'
+        )
+    ),
     trade_value DECIMAL(15,2),
     confidence_score DECIMAL(4,3),
+    -- Volatility analysis
+    historical_volatility DECIMAL(6,4),
+    implied_volatility_atm DECIMAL(6,4),
+    volatility_flag VARCHAR(20),
+    volatility_premium DECIMAL(6,4),
+    -- Additional fields from flow screener
+    direction VARCHAR(10),
+    moneiness VARCHAR(10),
+    pc_ratio DECIMAL(6,4),
+    earnings_date DATE,
+    sector VARCHAR(50),
+    market_cap VARCHAR(20),
+    stock_etf VARCHAR(10),
+    uoa VARCHAR(20),
+    weekly BOOLEAN,
+    type VARCHAR(20),
+    -- Stock movement tracking for predictive model
+    stock_movement_1d DECIMAL(6,4),
+    stock_movement_3d DECIMAL(6,4),
+    stock_movement_7d DECIMAL(6,4),
+    stock_movement_30d DECIMAL(6,4),
+    movement_direction VARCHAR(20),
+    -- Metadata
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -50,6 +84,10 @@ CREATE INDEX idx_options_flow_expiration ON options_flow(expiration_date);
 CREATE INDEX idx_options_flow_classification ON options_flow(classification);
 CREATE INDEX idx_options_flow_created_datetime ON options_flow(created_datetime);
 CREATE INDEX idx_options_flow_er_flag ON options_flow(er_flag);
+CREATE INDEX idx_options_flow_trade_group ON options_flow(trade_group_id);
+CREATE INDEX idx_options_flow_actual_outcome ON options_flow(actual_outcome);
+CREATE INDEX idx_options_flow_volatility_flag ON options_flow(volatility_flag);
+CREATE INDEX idx_options_flow_direction ON options_flow(direction);
 
 -- Create trigger for updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

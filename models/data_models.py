@@ -33,9 +33,35 @@ class OptionsFlow:
     # Enhanced classification and outcome fields
     classification: Optional[str] = None
     expected_outcome: Optional[str] = None
-    actual_outcome: Optional[str] = None  # Values: "Forever Discounted", "Discount then pump", "Forever Pumped", "Pump then discount"
+    actual_outcome: Optional[str] = None  # Values: "FOREVER DISCOUNTED", "DISCOUNT THEN PUMP", "FOREVER PUMPED", "PUMP THEN DISCOUNT", "MANUAL REVIEW"
     trade_value: float = 0.0
     confidence_score: float = 0.0
+    # Multi-leg trade identification
+    trade_signature: Optional[str] = None
+    trade_group_id: Optional[str] = None
+    # Volatility analysis
+    historical_volatility: Optional[float] = None
+    implied_volatility_atm: Optional[float] = None
+    volatility_flag: Optional[str] = None
+    volatility_premium: Optional[float] = None
+    # Additional flow screener fields
+    direction: Optional[str] = None
+    moneiness: Optional[str] = None
+    pc_ratio: Optional[float] = None
+    earnings_date: Optional[date] = None
+    sector: Optional[str] = None
+    market_cap: Optional[str] = None
+    stock_etf: Optional[str] = None
+    uoa: Optional[str] = None
+    weekly: Optional[bool] = None
+    type: Optional[str] = None
+    # Stock movement tracking
+    stock_movement_1d: Optional[float] = None
+    stock_movement_3d: Optional[float] = None
+    stock_movement_7d: Optional[float] = None
+    stock_movement_30d: Optional[float] = None
+    movement_direction: Optional[str] = None
+    # Metadata
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
