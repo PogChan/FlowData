@@ -90,19 +90,4 @@ class OptionsChainData:
     expires_at: Optional[datetime] = None
 
 
-@dataclass
-class ClassificationRule:
-    """
-    Dynamic classification rule model for trade analysis.
-    Maps to the classification_rules table schema.
-    """
-    rule_id: str
-    name: str
-    description: Optional[str]
-    classification_logic: Dict[str, Any]
-    expected_outcome: str
-    result_keywords: List[str]
-    is_active: bool = True
-    success_rate: Optional[float] = None
-    created_date: Optional[datetime] = None
-    updated_date: Optional[datetime] = None
+# ClassificationRule removed - not used in simplified workflow

@@ -13,7 +13,7 @@ import logging
 from services.volatility_calculator import VolatilityCalculator
 from services.polygon_api_client import PolygonAPIClient
 from services.database_service import SupabaseService
-from services.trade_classifier import TradeClassifier
+# Removed unused import
 from services.outcome_tracker import OutcomeTracker
 from models.data_models import OptionsFlow
 
@@ -27,11 +27,11 @@ class IntegratedFlowProcessor:
     """
 
     def __init__(self, polygon_client: PolygonAPIClient, volatility_calculator: VolatilityCalculator,
-                 db_service: SupabaseService, classifier: TradeClassifier, outcome_tracker: OutcomeTracker):
+                 db_service: SupabaseService, predictive_model, outcome_tracker: OutcomeTracker):
         self.polygon_client = polygon_client
         self.volatility_calculator = volatility_calculator
         self.db_service = db_service
-        self.classifier = classifier
+        self.predictive_model = predictive_model
         self.outcome_tracker = outcome_tracker
 
     def process_daily_flows(self, flows_df: pd.DataFrame, progress_callback=None) -> Dict[str, Any]:
@@ -388,7 +388,7 @@ class IntegratedFlowProcessor:
                         options_flows.append(flow)
 
                     # Classify the trade group
-                    classification, expected_outcome, confidence = self.classifier.classify_multi_leg_trade(options_flows)
+                    classification, expected_outcome, confidence = self._classify_trade_group(options_flows)
 
                     # Add volatility analysis
                     vol_data = volatility_dict.get(symbol, {})
@@ -673,6 +673,47 @@ class IntegratedFlowProcessor:
         except Exception as e:
             logger.error(f"Failed to generate summary: {e}")
             return {'error': str(e)}
+
+    def _classify_trade_group(self, options_flows: List[OptionsFlow]) -> Tuple[str, str, float]:
+        """
+        Simple classification for trade groups.
+        """
+        try:
+            if not options_flows:
+                return "UNCLASSIFIED", "No trades provided", 0.0
+
+            # Simple classification based on trade characteristics
+            has_calls = any(flow.call_put == 'CALL' for flow in options_flows)
+            has_puts = any(flow.call_put == 'PUT' for flow in options_flows)
+            has_buys = any(flow.buy_sell == 'BUY' for flow in options_flows)
+            has_sells = any(flow.buy_sell == 'SELL' for flow in options_flows)
+
+            # Multi-leg classification
+            if has_calls and has_puts and has_buys and has_sells:
+                # Check for straddle pattern
+                buy_calls = [f for f in options_flows if f.buy_sell == 'BUY' and f.call_put == 'CALL']
+                buy_puts = [f for f in options_flows if f.buy_sell == 'BUY' and f.call_put == 'PUT']
+
+                if buy_calls and buy_puts:
+                    return "STRADDLE", "Volatility play - expects big move either direction", 0.8
+                else:
+                    return "COMPLEX_SPREAD", "Multi-leg spread strategy", 0.7
+
+            elif has_calls and has_puts:
+                return "CALL_PUT_SPREAD", "Directional spread with calls and puts", 0.7
+
+            elif has_buys and has_sells:
+                if has_calls:
+                    return "CALL_SPREAD", "Call spread strategy", 0.8
+                else:
+                    return "PUT_SPREAD", "Put spread strategy", 0.8
+
+            else:
+                return "SIMPLE_POSITION", "Single-sided position", 0.6
+
+        except Exception as e:
+            logger.error(f"Classification failed: {e}")
+            return "CLASSIFICATION_ERROR", f"Error: {str(e)}", 0.0
 
     def get_earnings_date(self, symbol: str) -> Optional[datetime]:
         """

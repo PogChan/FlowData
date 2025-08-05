@@ -40,9 +40,6 @@ api_key = "your-polygon-api-key"
 ```bash
 # Create database tables
 python database/migrate.py
-
-# Initialize classification rules
-python initialize_rules.py
 ```
 
 ### 4. Launch Application (30 seconds)
